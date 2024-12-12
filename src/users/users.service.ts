@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { FirebaseService } from 'src/firebase/firebase.service';
+import { errorResponse } from 'src/tools/function.tools';
 
 @Injectable()
 export class UsersService {
@@ -18,13 +19,13 @@ export class UsersService {
             console.log("Consulta de usuario por email:", userByEmail, userByEmail[0] == false);
 
             if (userByEmail.length > 0 ) {
-                throw { cod: 0, message: "Error: user is already registered with the email" };
+                throw await errorResponse("Error: user is already registered with the email", "createUser");
             }
 
             const userByIdNumber = await this.firebaseService.findUserByField("idNumber", data.idNumber, this.collectionName);
 
             if (userByIdNumber.length > 0) {
-                throw { cod: 0, message: "Error: user is already registered with the idNumber" };
+                throw await errorResponse("Error: user is already registered with the idNumber", "createUser");
             }
 
             return await this.firebaseService.createDocument(this.collectionName, data);
