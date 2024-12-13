@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import * as argon2 from 'argon2';
 import { FirebaseService } from 'src/firebase/firebase.service';
 import { errorResponse } from 'src/tools/function.tools';
 
@@ -28,10 +29,12 @@ export class UsersService {
                 throw await errorResponse("Error: user is already registered with the idNumber", "createUser");
             }
 
+            data.password = await argon2.hash(data.password);
+
             return await this.firebaseService.createDocument(this.collectionName, data);
         } catch (error) {
             console.error("Error al crear usuario:", error);
-            throw error; // Relanzar el error para que el llamador lo maneje
+            throw error;
         }
     }
 
