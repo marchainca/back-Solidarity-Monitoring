@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { FirebaseService } from 'src/firebase/firebase.service';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dtos/create-user.dto';
@@ -6,18 +6,23 @@ import { UpdateUserDto } from './dtos/update-user.dto';
 import { sendResponse } from 'src/tools/function.tools';
 import params from 'src/tools/params';
 import { CustomResponse } from 'src/interfaces/interfaces';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 
 @Controller('letsHelp/Colombia/users/')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class UsersController {
     constructor(private readonly usersService: UsersService) {}
 
-    // Ruta para crear un usuario
     @Post()
+    @Roles('Admin')
     async createUser(@Body() userData: CreateUserDto): Promise<CustomResponse> {
         try {
+          console.log("depués del try")
             const id = await this.usersService.createUser(userData);
             
-            return await sendResponse(true, params.ResponseMessages.CREATED, id )
+            return await sendResponse(true, params.ResponseMessages.CREATED, {id} )
         } catch (error) {
             throw new HttpException(
                 {

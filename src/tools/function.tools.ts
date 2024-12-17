@@ -9,12 +9,12 @@ import params from "./params";
  * @param message El mensaje a enviar en la respuesta
  * @param data Los datos a incluir en la respuesta
 */
-export async function sendResponse(success: boolean, message: string, data?: any): Promise<CustomResponse> {
+export async function sendResponse(success: boolean, message: string, content?: any): Promise<CustomResponse> {
     const code = success ? 1 : 0;
     const response: CustomResponse = {
-      code,
+      code, 
       message,
-      data: data ? { content: data } : {},
+      content,
     };
     return response;
   }

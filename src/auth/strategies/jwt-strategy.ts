@@ -11,11 +11,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         super({
           jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), // Extrae el token del encabezado Authorization
           ignoreExpiration: false, // No ignorar tokens expirados
-          secretOrKey: () => configService.get<string>('SECRET_KEY'),
+          secretOrKey: configService.get<string>('SECRET_KEY'),
         });
     }
 
     async validate(payload: any) {
-        return { userId: payload.sub, email: payload.email };
+        console.log("Ingreso al validate")
+        return { userId: payload.sub, email: payload.email, roles: payload.roles };
     }
 }

@@ -1,7 +1,7 @@
 export interface CustomResponse {
     code: number;
     message: string;
-    data?: any;
+    content?: any;
     attribute?: string; 
     statusCode?:any
   }

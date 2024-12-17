@@ -10,10 +10,11 @@ import { FirebaseService } from 'src/firebase/firebase.service';
 
 @Module({
   imports: [
+    ConfigModule,
     UsersModule, 
     PassportModule,
     JwtModule.registerAsync({
-      imports: [ConfigModule], // Importar el módulo de configuración
+      imports: [ConfigModule,], // Importar el módulo de configuración
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('SECRET_KEY'), 

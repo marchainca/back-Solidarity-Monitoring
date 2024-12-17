@@ -22,13 +22,10 @@ export class AuthService {
                 throw await errorResponse("Error: Invalid email", "validateUser");
             }
 
-            //se emplea argon2 ya que es la recomendada por OWASP
-            const isPasswordValid = await argon2.verify(user[0].password, password);
-            console.log("isPasswordValid", isPasswordValid)
-            if (!isPasswordValid) {
+            if (user[0].password != password) {
                 throw await errorResponse("Error: Invalid password", "validateUser");
             }
-            return { id: user[0].id, email: user[0].email, name: user[0].name };
+            return { id: user[0].id, email: user[0].email, name: user[0].name, role: user[0].role};
         } catch (error) {
             throw error;
         }
@@ -38,11 +35,13 @@ export class AuthService {
     // Generar un JWT
     async login(user: any): Promise<{ accessToken: string }> {
         try {
-            const payload = { sub: user.id, email: user.email };
+            const payload = { sub: user.id, email: user.email, roles: user.role };
+            console.log("payload", payload)
             return {
             accessToken: this.jwtService.sign(payload),
             };
         } catch (error) {
+            console.log("Error login", error)
             throw error;
         }
     }

@@ -24,4 +24,9 @@ export class CreateUserDto {
   @IsString()
   @IsOptional()
   urlImage:string;
+
+  @IsString()
+  @IsNotEmpty()
+  role: string;
+
 }
