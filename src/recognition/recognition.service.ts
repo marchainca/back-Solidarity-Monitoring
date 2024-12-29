@@ -2,21 +2,25 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import * as vision from '@google-cloud/vision'
 import { Firestore } from '@google-cloud/firestore';
 import { Storage } from '@google-cloud/storage';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class RecognitionService {
     private visionClient: vision.ImageAnnotatorClient;
     private firestore: Firestore;
     private storage: Storage;
-    private bucketName: ''; // Ojo reemplazar con el nombre del bucket de Google Cloud Storage
-    constructor(){
+    private bucketName: string; // Ojo reemplazar con el nombre del bucket de Google Cloud Storage
+    constructor(
+      configService: ConfigService
+    ){
         this.visionClient = new vision.ImageAnnotatorClient({
-          keyFilename: "" // ojo poner la ruta de las credenciales  
+          keyFilename:  configService.get<string>('GOOGLE_APPLICATION_CREDENTIALS'),// ojo poner la ruta de las credenciales  
         });
         this.firestore = new Firestore();
+        this.bucketName = configService.get<string>('BUCKET_NAME');
     }
 
-    // Método para analizar la imagen y entrenar un integrante
+    // Método para analizar la imagen y entrenar un integrante registro de nuevo integrante
     async trainFace(imageBuffer: Buffer, fileName: string, integranteData: any): Promise<string> {
         try {
           // 1. Subir la imagen a Cloud Storage
