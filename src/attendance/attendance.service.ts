@@ -10,13 +10,16 @@ export class AttendanceService {
     }
 
     // Listar asistencias con filtros opcionales
-    async listAttendances(filters?: { identificacion?: string; actividad?: string; fecha?: string }): Promise<any[]> {
-        const asistenciasRef = this.firestore.collection('asistencias');
+    async listAttendances(filters?: { identificacion?: string; actividad?: string; fecha?: string },
+        page: number = 1,
+        limit: number = 10,
+    ): Promise<{data: any[]; total: number; page: number; limit: number }> {
+        const asistenciasRef = this.firestore.collection('attendances');
         let query: FirebaseFirestore.Query = asistenciasRef;
 
         // Aplicar filtros si se proporcionan
         if (filters?.identificacion) {
-        query = query.where('integranteId', '==', filters.identificacion);
+        query = query.where('identificacion', '==', filters.identificacion);
         }
         if (filters?.actividad) {
         query = query.where('actividad', '==', filters.actividad);
@@ -27,17 +30,29 @@ export class AttendanceService {
 
         const querySnapshot = await query.get();
 
-        if (querySnapshot.empty) {
+        /* if (querySnapshot.empty) {
         return [];
-        }
+        } */
 
         // Transformar los documentos en un arreglo de objetos
-        const asistencias = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        }));
+        const allAttendances = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
 
-        return asistencias;
+        // Implementar paginación manual
+        const total = allAttendances.length;
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+
+        const paginatedData = allAttendances.slice(startIndex, endIndex);
+
+        return {
+            data: paginatedData,
+            total,
+            page,
+            limit,
+        };
     }
 
     // Buscar integrante por el hash facial
@@ -103,5 +118,30 @@ export class AttendanceService {
             throw error;
         }
         
+    }
+
+    // Registrar inasistencia
+    async registerAbsence(identificacion: string, actividad: string, motivo: string ): Promise<string> {
+        // Validar que el integrante existe
+        const integranteRef = this.firestore.collection('members').doc(identificacion);
+        const integranteDoc = await integranteRef.get();
+
+        if (!integranteDoc.exists) {
+        throw new NotFoundException(`No se encontró un integrante con el ID ${identificacion}.`);
+        }
+
+        // Crear un nuevo registro de inasistencia
+        const inasistenciasRef = this.firestore.collection('absences');
+        const newAbsenceRef = inasistenciasRef.doc();
+
+        await newAbsenceRef.set({
+        identificacion,
+        actividad,
+        motivo,
+        fecha: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        });
+
+        return `Inasistencia registrada exitosamente para el integrante ${identificacion}`;
     }
 }

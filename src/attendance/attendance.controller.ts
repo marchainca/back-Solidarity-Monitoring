@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Post, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpException, HttpStatus, Post, Query } from '@nestjs/common';
 import { AttendanceService } from './attendance.service';
 import { sendResponse } from 'src/tools/function.tools';
 import params from 'src/tools/params';
@@ -11,12 +11,26 @@ export class AttendanceController {
     // Endpoint para listar asistencias con filtros opcionales
     @Get('list')
     async listAttendances(
-        @Query('integranteId') identificacion?: string,
+        @Query('identificacion') identificacion?: string,
         @Query('actividad') actividad?: string,
         @Query('fecha') fecha?: string,
-    ): Promise<any[]> {
+        @Query('page') page: string = '1',
+        @Query('limit') limit: string = '10',
+    ): Promise<any> {
+        // Validar que los parámetros de paginación sean números válidos
+        const pageNumber = parseInt(page, 10);
+        const limitNumber = parseInt(limit, 10);
+
+        if (isNaN(pageNumber) || pageNumber < 1) {
+            throw new BadRequestException('El parámetro "page" debe ser un número mayor o igual a 1.');
+        }
+        
+        if (isNaN(limitNumber) || limitNumber < 1) {
+        throw new BadRequestException('El parámetro "limit" debe ser un número mayor o igual a 1.');
+        }
+
         const filters = { identificacion, actividad, fecha };
-        return await this.attendanceService.listAttendances(filters);
+        return await this.attendanceService.listAttendances(filters, pageNumber, limitNumber);
     }
 
      // Ruta para identificar al integrante
@@ -61,5 +75,19 @@ export class AttendanceController {
             );
         }
         
+    }
+
+    // Endpoint para registrar inasistencias
+    @Post('absences')
+    async registerAbsence(
+        @Body('identificacion') identificacion: string,
+        @Body('actividad') actividad: string,
+        @Body('motivo') motivo: string,
+    ): Promise<string> {
+        if (!identificacion || !actividad || !motivo) {
+        throw new BadRequestException('Todos los campos (identificacion, actividad, motivo) son obligatorios.');
+        }
+
+        return await this.attendanceService.registerAbsence(identificacion, actividad, motivo);
     }
 }
