@@ -6,9 +6,9 @@ import { UpdateUserDto } from './dtos/update-user.dto';
 import { sendResponse } from 'src/tools/function.tools';
 import params from 'src/tools/params';
 import { CustomResponse } from 'src/interfaces/interfaces';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { Roles } from 'src/auth/decorators/roles.decorator';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
 
 @Controller('letsHelp/Colombia/users/')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -38,6 +38,7 @@ export class UsersController {
 
     // Ruta para obtener todos los usuarios
     @Get()
+    @Roles('Admin')
     async getUsers(): Promise<any[]> {
         
         try {

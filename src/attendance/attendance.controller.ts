@@ -1,10 +1,12 @@
-import { BadRequestException, Body, Controller, Get, HttpException, HttpStatus, Post, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpException, HttpStatus, Post, Query, UseGuards } from '@nestjs/common';
 import { AttendanceService } from './attendance.service';
 import { sendResponse } from 'src/tools/function.tools';
 import params from 'src/tools/params';
 import { CustomResponse } from 'src/interfaces/interfaces';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 
 @Controller('letsHelp/Colombia/attendance/')
+@UseGuards(JwtAuthGuard)
 export class AttendanceController {
     constructor(private readonly attendanceService: AttendanceService) {}
 

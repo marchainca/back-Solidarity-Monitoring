@@ -4,13 +4,15 @@ import { AuthController } from './auth.controller';
 import { UsersModule } from 'src/users/users.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtStrategy } from './strategies/jwt-strategy';
+import { JwtStrategy } from '../common/strategies/jwt-strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { FirebaseService } from 'src/firebase/firebase.service';
+import { AttendanceModule } from 'src/attendance/attendance.module';
 
 @Module({
   imports: [
     ConfigModule,
+    AttendanceModule,
     UsersModule, 
     PassportModule,
     JwtModule.registerAsync({
