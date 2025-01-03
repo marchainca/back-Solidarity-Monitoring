@@ -29,7 +29,7 @@ export class UsersService {
                 throw await errorResponse("Error: user is already registered with the idNumber", "createUser");
             }
 
-            data.password = await argon2.hash(data.password);
+            //data.password = await argon2.hash(data.password);
 
             return await this.firebaseService.createDocument(this.collectionName, data);
         } catch (error) {
