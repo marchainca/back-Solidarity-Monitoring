@@ -17,6 +17,7 @@ export class AuthService {
         try {
             console.log("validateUser", email, password)
             const user = await this.firebaseService.findUserByField("email", email, this.collectionName);
+            console.log("Despues de validar usuario")
             console.log("valor de user", user[0].password);
             if (user.length < 1) {
                 throw await errorResponse("Error: Invalid email", "validateUser");

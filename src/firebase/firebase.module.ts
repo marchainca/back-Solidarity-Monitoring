@@ -1,6 +1,7 @@
 import { Module, Global } from '@nestjs/common';
 import { firestore, firebaseAuth } from './firebase.config'
 import { FirebaseService } from './firebase.service';
+import { FirestoreConnectionService } from './firestore-connection.service';
 
 @Global()
 @Module({providers: [
@@ -13,6 +14,7 @@ import { FirebaseService } from './firebase.service';
       useValue: firebaseAuth,
     },
     FirebaseService,
+    FirestoreConnectionService
   ],
-  exports: ['FIRESTORE', 'FIREBASE_AUTH'],})
+  exports: ['FIRESTORE', 'FIREBASE_AUTH', FirestoreConnectionService],})
 export class FirebaseModule {}

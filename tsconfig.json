@@ -18,6 +18,8 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "typeRoots": ["node_modules/@types"],
-    "types": ["node", "Multer"]
+    "types": ["node", "Multer"],
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
   }
 }

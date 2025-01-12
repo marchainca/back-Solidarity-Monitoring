@@ -6,6 +6,10 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { AttendanceModule } from './attendance/attendance.module';
+import { FirestoreConnectionService } from './firebase/firestore-connection.service';
+import { SchedulerModule } from './scheduler/scheduler.module';
+import { RecognitionController } from './recognition/recognition.controller';
+import { RecognitionService } from './recognition/recognition.service';
 
 @Module({
   imports: [
@@ -17,8 +21,9 @@ import { AttendanceModule } from './attendance/attendance.module';
     AuthModule,
     UsersModule,
     AttendanceModule,
+    SchedulerModule
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, RecognitionController],
+  providers: [AppService, FirestoreConnectionService, RecognitionService],
 })
 export class AppModule {}

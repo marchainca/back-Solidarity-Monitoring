@@ -1,4 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
+import { log } from 'console';
 import { Firestore, query, where } from 'firebase/firestore';
 import {
   collection,
@@ -41,9 +42,17 @@ export class FirebaseService {
   * collectionName, collección a la cual se debe consultar
    */
   async findUserByField(field: string, value: string, collectionName: string ): Promise<any[]> {
-    const colRef = collection(this.firestore, collectionName);
-    const qry = query(colRef, where(field, '==', value)); 
-    const snapshot = await getDocs(qry); 
-    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    try {
+      const colRef = collection(this.firestore, collectionName);
+      const qry = query(colRef, where(field, '==', value)); 
+      console.log("antes del snapshot", qry)
+      const snapshot = await getDocs(qry); 
+      console.log("antes del return");
+      return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+      console.log("Error findUserByField", error);
+      throw error;
+    }
+   
   }
 }

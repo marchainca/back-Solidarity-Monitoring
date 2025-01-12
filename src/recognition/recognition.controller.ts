@@ -1,28 +1,23 @@
-import { Controller, Post, UploadedFile, Body, UseInterceptors, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
 import { RecognitionService } from './recognition.service';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { v4 as uuidv4 } from 'uuid';
-import { Express } from 'express';
 
 @Controller('letsHelp/Colombia/recognition')
 export class RecognitionController {
-    constructor(
-        private readonly recognitionService: RecognitionService,
-    ){}
+  constructor(private readonly recognitionService: RecognitionService) {}
 
-    @Post('train')
-    @UseInterceptors(FileInterceptor('image'))
-    async trainFace(
-        @UploadedFile() file: Express.Multer.File, // Tipo correcto para `file` 
-        @Body() integranteData: any, // Datos adicionales
-    ) {
-        if (!file) {
-        throw new BadRequestException('No se ha subido ninguna imagen.');
-        }
+  // Endpoint para registrar una persona
+  @Post('/register')
+  async registerPerson(@Body() body: any): Promise<string> {
+    return await this.recognitionService.registerPerson(body);
+  }
 
-        // Genera un nombre único para la imagen
-        const fileName = `${uuidv4()}.jpg`;
-
-        return await this.recognitionService.trainFace(file.buffer, fileName, integranteData);
+  // Endpoint para identificar una persona
+  @Post('/identify')
+  async identifyPerson(@Body('imageBase64') imageBase64: string): Promise<any> {
+    if (!imageBase64) {
+      throw new BadRequestException('La imagen base64 es requerida.');
     }
+
+    return await this.recognitionService.identifyPerson(imageBase64);
+  }
 }
