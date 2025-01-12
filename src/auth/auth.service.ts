@@ -17,8 +17,8 @@ export class AuthService {
         try {
             console.log("validateUser", email, password)
             const user = await this.firebaseService.findUserByField("email", email, this.collectionName);
-            console.log("Despues de validar usuario")
-            console.log("valor de user", user[0].password);
+            /* console.log("Despues de validar usuario")
+            console.log("valor de user", user[0].password); */
             if (user.length < 1) {
                 throw await errorResponse("Error: Invalid email", "validateUser");
             }
@@ -37,7 +37,7 @@ export class AuthService {
     async login(user: any): Promise<object> {
         try {
             const payload = { sub: user.id, email: user.email, roles: user.role };
-            console.log("payload", payload)
+            //console.log("payload", payload)
             return {
             accessToken: this.jwtService.sign(payload),
             user

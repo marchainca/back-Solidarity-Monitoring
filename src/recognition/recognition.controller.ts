@@ -1,23 +1,57 @@
-import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Body, BadRequestException, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { RecognitionService } from './recognition.service';
+import { sendResponse } from 'src/tools/function.tools';
+import params from 'src/tools/params';
+import { CustomResponse } from 'src/interfaces/interfaces';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 
 @Controller('letsHelp/Colombia/recognition')
+@UseGuards(JwtAuthGuard)
 export class RecognitionController {
   constructor(private readonly recognitionService: RecognitionService) {}
 
   // Endpoint para registrar una persona
   @Post('/register')
-  async registerPerson(@Body() body: any): Promise<string> {
-    return await this.recognitionService.registerPerson(body);
+  async registerPerson(@Body() body: any): Promise<CustomResponse> {
+    try {
+      console.log("Data recibida", body)
+      const register = await this.recognitionService.registerPerson(body);
+      return  await sendResponse(true, params.ResponseMessages.CREATED, {register} )
+    } catch (error) {
+      throw new HttpException(
+        {
+          code: error.code,
+          message: error.message,
+          attribute: error.attribute,
+          statusCode: error.statusCode,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    
   }
 
   // Endpoint para identificar una persona
   @Post('/identify')
   async identifyPerson(@Body('imageBase64') imageBase64: string): Promise<any> {
-    if (!imageBase64) {
-      throw new BadRequestException('La imagen base64 es requerida.');
+    try {
+      if (!imageBase64) {
+        throw new BadRequestException('La imagen base64 es requerida.');
+      }
+      console.log("que lelga en identifyPerson", imageBase64)
+      const identify = await this.recognitionService.identifyPerson(imageBase64);
+      return sendResponse(true, params.ResponseMessages.MESSAGE_SUCCESS, identify)
+    } catch (error) {
+      throw new HttpException(
+        {
+          code: error.code,
+          message: error.message,
+          attribute: error.attribute,
+          statusCode: error.statusCode,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
     }
-
-    return await this.recognitionService.identifyPerson(imageBase64);
+    
   }
 }

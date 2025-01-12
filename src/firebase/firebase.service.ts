@@ -45,9 +45,9 @@ export class FirebaseService {
     try {
       const colRef = collection(this.firestore, collectionName);
       const qry = query(colRef, where(field, '==', value)); 
-      console.log("antes del snapshot", qry)
+      //console.log("antes del snapshot", qry)
       const snapshot = await getDocs(qry); 
-      console.log("antes del return");
+      //console.log("antes del return");
       return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     } catch (error) {
       console.log("Error findUserByField", error);

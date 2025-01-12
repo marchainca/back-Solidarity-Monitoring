@@ -62,10 +62,10 @@ export class AttendanceService {
     }
 
     // Buscar integrante por el hash facial
-    async identifyIntegrante(rostroHash: string): Promise<any> {
+    async identifyIntegrante(identificacion: string): Promise<any> {
         try {
-            const integrantesRef = this.firestore.collection('members');
-            const querySnapshot = await integrantesRef.where('rostroHash', '==', rostroHash).get();
+            const integrantesRef = this.firestore.collection('faceRecognition');
+            const querySnapshot = await integrantesRef.where('documentNumber', '==', identificacion).get();
 
             if (querySnapshot.empty) {
                 throw await errorResponse("Error: Invalid hash", "identifyIntegrante");
@@ -129,13 +129,15 @@ export class AttendanceService {
     }
 
     // Registrar inasistencia
-    async registerAbsence(identificacion: string, actividad: string, motivo: string ): Promise<object> {
+    async registerAbsence(identificacion: string, actividad: string, motivo: string, fecha: string ): Promise<object> {
         try {
             // Validar que el integrante existe
-            const integranteRef = this.firestore.collection('members').doc(identificacion);
-            const integranteDoc = await integranteRef.get();
+            const integrantesRef = this.firestore.collection('faceRecognition');
+            let querySnapshot = await integrantesRef.where('documentNumber', '==', identificacion).get();
+            /* const integranteRef = this.firestore.collection('faceRecognition').doc(identificacion);
+            const integranteDoc = await integranteRef.get(); */
 
-            if (!integranteDoc.exists) {
+            if (querySnapshot.empty) {
             throw new NotFoundException(`No se encontró un integrante con el ID ${identificacion}.`);
             }
 
@@ -147,7 +149,7 @@ export class AttendanceService {
             identificacion,
             actividad,
             motivo,
-            fecha: new Date().toISOString(),
+            fecha: fecha,
             createdAt: new Date().toISOString(),
             });
 

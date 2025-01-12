@@ -51,11 +51,10 @@ export class AttendanceController {
 
      // Ruta para identificar al integrante
     @Post('identify')
-    async identifyIntegrante(@Body('rostroHash') rostroHash: string): Promise<CustomResponse> {
+    async identifyIntegrante(@Body('identificacion') identificacion: string): Promise<CustomResponse> {
         try {
-            const identify= await this.attendanceService.identifyIntegrante(rostroHash);
+            const identify= await this.attendanceService.identifyIntegrante(identificacion);
             return await sendResponse(true, params.ResponseMessages.SUCCESS, identify);
-             
         } catch (error) {
             throw new HttpException(
                 {
@@ -99,12 +98,14 @@ export class AttendanceController {
         @Body('identificacion') identificacion: string,
         @Body('actividad') actividad: string,
         @Body('motivo') motivo: string,
+        @Body('fecha') fecha: string,
     ): Promise<object> {
         try {
             if (!identificacion || !actividad || !motivo) {
                 throw new BadRequestException('Todos los campos (identificacion, actividad, motivo) son obligatorios.');
             }
-            const absence = await this.attendanceService.registerAbsence(identificacion, actividad, motivo);
+            console.log("Llega al controlador:", identificacion, actividad, motivo, fecha);
+            const absence = await this.attendanceService.registerAbsence(identificacion, actividad, motivo, fecha);
             return await sendResponse(true, params.ResponseMessages.SUCCESS, absence);
         } catch (error) {
             throw new HttpException(

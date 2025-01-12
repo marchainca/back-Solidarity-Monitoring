@@ -7,7 +7,7 @@ import { FirestoreConnectionService } from 'src/firebase/firestore-connection.se
 export class FirestoreSchedulerService {
   constructor(private readonly firestoreService: FirestoreConnectionService) {}
 
-  @Cron('0 */5 * * * *') // Ejecutar cada 5 minutos
+  //@Cron('0 */5 * * * *') // Ejecutar cada 5 minutos
   async checkFirestoreConnection() {
     try {
       console.log('Verificando conexión a Firestore...');

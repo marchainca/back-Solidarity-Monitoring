@@ -7,8 +7,16 @@ export interface CustomResponse {
 }
 
 export interface Person {
-  id: string; // ID del documento en Firestore
-  name: string; // Nombre de la persona
-  lastName: string; // Apellido de la persona
-  descriptor: number[]; // Descriptor facial almacenado
+  id: string; 
+  name: string; 
+  lastName: string; 
+  email: string;
+  documentType: string;
+  documentNumber: string; 
+  birthdate: string;
+  address: string; 
+  neighborhood: string;
+  policyNumber: string; 
+  emergencyContact: string;
+  descriptor: number[]; 
 }

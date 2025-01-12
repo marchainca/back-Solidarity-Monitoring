@@ -11,7 +11,7 @@ export class FirestoreConnectionService implements OnModuleInit {
 
   // Verificar la conexión al iniciar el módulo
   async onModuleInit() {
-    await this.checkConnection();
+    // await this.checkConnection(); //Se comenta para no aumentar la cantidad de peticiones 
   }
 
   // Método para verificar la conexión a Firestore
