@@ -39,6 +39,7 @@ export class RecognitionController {
         throw new BadRequestException('La imagen base64 es requerida.');
       }
       console.log("que lelga en identifyPerson", imageBase64)
+      imageBase64 = "data:image/jpg;base64," + imageBase64
       const identify = await this.recognitionService.identifyPerson(imageBase64);
       return sendResponse(true, params.ResponseMessages.MESSAGE_SUCCESS, identify)
     } catch (error) {

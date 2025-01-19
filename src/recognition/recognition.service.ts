@@ -191,7 +191,7 @@ export class RecognitionService {
       console.log('People data:', people);
   
       if (people.length === 0) {
-        return { message: 'No hay personas registradas para realizar la comparación.' };
+        throw await errorResponse("Error: There are no people registered to make the comparison.", "identifyPerson");
       }
   
       // Crear labeledDescriptors para FaceMatcher
@@ -211,7 +211,7 @@ export class RecognitionService {
   
       // Verificar si hay labeledDescriptors válidos
       if (labeledDescriptors.length === 0) {
-        return { message: 'No hay descriptores válidos para realizar la comparación.' };
+        throw await errorResponse("Error: There are no valid descriptors to perform the comparison.", "identifyPerson");
       }
   
       // Crear el faceMatcher con el umbral deseado
@@ -221,7 +221,7 @@ export class RecognitionService {
       console.log('Best match label:', bestMatch);
   
       if (bestMatch.label === 'unknown') {
-        return { message: 'No se encontró ninguna coincidencia.' };
+        throw await errorResponse("Error: No match found.", "identifyPerson");
       }
   
       // Encontrar los datos de la persona identificada
@@ -230,7 +230,7 @@ export class RecognitionService {
       );
   
       if (!identifiedPerson) {
-        return { message: 'Ocurrió un error al buscar los datos de la persona identificada.' };
+        throw await errorResponse("Error: An error occurred while retrieving the data of the identified person.", "identifyPerson");
       }
   
       console.log('Persona identificada:', identifiedPerson);

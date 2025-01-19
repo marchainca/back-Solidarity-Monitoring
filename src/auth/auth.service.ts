@@ -26,7 +26,7 @@ export class AuthService {
             if (user[0].password != password) {
                 throw await errorResponse("Error: Invalid password", "validateUser");
             }
-            return { id: user[0].id, email: user[0].email, name: user[0].name, role: user[0].role, urlImage: user[0].urlImage};
+            return { id: user[0].id, idNumber: user[0].idNumber, email: user[0].email, name: user[0].name, role: user[0].role, urlImage: user[0].urlImage, birthdate: user[0].birthdate};
         } catch (error) {
             throw error;
         }
@@ -36,8 +36,9 @@ export class AuthService {
     // Generar un JWT
     async login(user: any): Promise<object> {
         try {
+
             const payload = { sub: user.id, email: user.email, roles: user.role };
-            //console.log("payload", payload)
+            //console.log("user", user)
             return {
             accessToken: this.jwtService.sign(payload),
             user

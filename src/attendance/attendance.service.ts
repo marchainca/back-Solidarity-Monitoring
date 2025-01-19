@@ -66,7 +66,7 @@ export class AttendanceService {
         try {
             const integrantesRef = this.firestore.collection('faceRecognition');
             const querySnapshot = await integrantesRef.where('documentNumber', '==', identificacion).get();
-
+            console.log("Consulta en identifyIntegrante", querySnapshot.docs[0].data())
             if (querySnapshot.empty) {
                 throw await errorResponse("Error: Invalid hash", "identifyIntegrante");
             }

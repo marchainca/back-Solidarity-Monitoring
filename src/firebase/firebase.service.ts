@@ -43,11 +43,16 @@ export class FirebaseService {
    */
   async findUserByField(field: string, value: string, collectionName: string ): Promise<any[]> {
     try {
+      console.log(field)
       const colRef = collection(this.firestore, collectionName);
       const qry = query(colRef, where(field, '==', value)); 
       //console.log("antes del snapshot", qry)
       const snapshot = await getDocs(qry); 
-      //console.log("antes del return");
+      /* console.log("antes del return", snapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        console.log(doc.id, " => ", doc.data());
+      }) 
+      ); */
       return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     } catch (error) {
       console.log("Error findUserByField", error);
