@@ -4,15 +4,12 @@ import * as canvas from 'canvas';
 import { loadFaceApiModels } from './face-api-loader';
 import { Firestore } from '@google-cloud/firestore';
 import { Person } from '../interfaces/interfaces'
-import { errorResponse } from 'src/tools/function.tools';
+import { errorResponse, uploadImageToCloudStorage } from 'src/tools/function.tools';
 import { firebaseStorage } from '../firebase/firebase.config';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Storage } from '@google-cloud/storage';
-//import {} from 'let-s-help-433a1-eaa337cd6205.json'
-
 // Extraer las clases necesarias de canvas
 const { Canvas, Image, ImageData } = canvas;
-
 // Configurar face-api para usar canvas en Node.js
 faceapi.env.monkeyPatch({ Canvas, Image, ImageData }as any);
 
@@ -109,7 +106,7 @@ export class RecognitionService {
         const descriptor = Array.from(detection.descriptor); // Convertir Float32Array a un array normal
 
         // Subir la imagen a Cloud Storage
-        const imageUrl = await this.uploadImageToCloudStorage(imageBase64, `images/${documentNumber}-${Date.now()}.jpg`);
+        const imageUrl = await uploadImageToCloudStorage(imageBase64, `images/${documentNumber}-${Date.now()}.jpg`);
 
         // Guardar los datos en Firestore
         const personRef = this.firestore.collection('faceRecognition').doc();
@@ -128,7 +125,7 @@ export class RecognitionService {
   }
   
   // Método para subir la imagen a Cloud Storage
-  async uploadImageToCloudStorage(base64String: string, filePath: string): Promise<string> {
+  /* async uploadImageToCloudStorage(base64String: string, filePath: string): Promise<string> {
     try {
         // Decodifica la imagen Base64
         const buffer = Buffer.from(base64String, 'base64');
@@ -151,7 +148,7 @@ export class RecognitionService {
         console.error("Error al subir la imagen a Google Cloud Storage:", error);
         throw new Error("Error al subir la imagen.");
     }
-}
+} */
   
   // Método para identificar una persona
   async identifyPerson(imageBase64: string): Promise<any> {
@@ -241,6 +238,49 @@ export class RecognitionService {
       };
     } catch (error) {
       console.error('Error al identificar a la persona:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Busca registros en la colección "faceRecognition" que coincidan con un nombre o parte de un nombre.
+   * @param searchTerm Término de búsqueda (nombre o parte del nombre).
+   * @returns Lista de registros coincidentes con los campos id, name, lastName y documentNumber.
+   */
+  async searchByName(searchTerm: string): Promise<any[]> {
+
+    try {
+      if (!searchTerm) {
+        throw await errorResponse("Error: You must provide a search term.", "searchByName");
+      }
+      // Referencia a la colección "faceRecognition"
+      const collectionRef = this.firestore.collection('faceRecognition');
+
+      // Realizar la consulta
+      const snapshot = await collectionRef
+        .where('name', '>=', searchTerm) // Comienza con el término de búsqueda
+        .where('name', '<=', searchTerm + '\uf8ff') // Termina con el término de búsqueda
+        .get();
+
+      if (snapshot.empty) {
+        console.log('No se encontraron coincidencias.');
+        return [];
+      }
+
+      // Extraer solo los campos necesarios
+      const results = snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          name: data.name,
+          lastName: data.lastName,
+          documentNumber: data.documentNumber,
+        };
+      });
+
+      return results;
+    } catch (error) {
+      console.error('Error al buscar por nombre:', error);
       throw error;
     }
   }

@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import * as argon2 from 'argon2';
 import { FirebaseService } from 'src/firebase/firebase.service';
-import { errorResponse } from 'src/tools/function.tools';
+import { RecognitionService } from 'src/recognition/recognition.service';
+import { errorResponse, isBase64, uploadImageToCloudStorage } from 'src/tools/function.tools';
 
 @Injectable()
 export class UsersService {
     private collectionName = 'users';
     
-    constructor(private readonly firebaseService: FirebaseService) {}
+    constructor(private readonly firebaseService: FirebaseService
+    ) {}
 
     /**
      * Crear usuarios en Firestore
@@ -47,6 +49,10 @@ export class UsersService {
 
     // Actualizar un usuario por ID
     async updateUser(userId: string, data: any): Promise<void> {
+        if ( await isBase64(data.urlImage) ) {
+            console.log("Entro al if del base64")
+           data.urlImage= await uploadImageToCloudStorage(data.urlImage, `images/${data.idNumber}-${Date.now()}.jpg`)
+        } 
         // Llama al método genérico para actualizar un documento
         return await this.firebaseService.updateDocument(this.collectionName, userId, data);
     }

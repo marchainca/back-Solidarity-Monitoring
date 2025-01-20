@@ -9,6 +9,7 @@ import { AttendanceModule } from './attendance/attendance.module';
 import { FirestoreConnectionService } from './firebase/firestore-connection.service';
 import { SchedulerModule } from './scheduler/scheduler.module';
 import { RecognitionModule } from './recognition/recognition.module';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { RecognitionModule } from './recognition/recognition.module';
     UsersModule,
     AttendanceModule,
     SchedulerModule,
-    RecognitionModule
+    RecognitionModule,
+    ReportsModule
   ],
   controllers: [AppController, ],
   providers: [AppService, FirestoreConnectionService],

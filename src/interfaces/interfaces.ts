@@ -20,3 +20,13 @@ export interface Person {
   emergencyContact: string;
   descriptor: number[]; 
 }
+
+export interface Report {
+  id?: string; 
+  identificacion: string; 
+  nombresApellidos: string; 
+  reporte: string;
+  createdAt: Date;
+  createdBy: string;
+}
+

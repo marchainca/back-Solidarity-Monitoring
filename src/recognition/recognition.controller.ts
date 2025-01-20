@@ -1,4 +1,4 @@
-import { Controller, Post, Body, BadRequestException, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, BadRequestException, HttpException, HttpStatus, UseGuards, Get, Query } from '@nestjs/common';
 import { RecognitionService } from './recognition.service';
 import { sendResponse } from 'src/tools/function.tools';
 import params from 'src/tools/params';
@@ -42,6 +42,26 @@ export class RecognitionController {
       imageBase64 = "data:image/jpg;base64," + imageBase64
       const identify = await this.recognitionService.identifyPerson(imageBase64);
       return sendResponse(true, params.ResponseMessages.MESSAGE_SUCCESS, identify)
+    } catch (error) {
+      throw new HttpException(
+        {
+          code: error.code,
+          message: error.message,
+          attribute: error.attribute,
+          statusCode: error.statusCode,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    
+  }
+
+  @Get('/search')
+  async searchByName(@Query('name') name: string): Promise<CustomResponse> {
+    try {
+
+      const search = await this.recognitionService.searchByName(name);
+      return sendResponse(true, params.ResponseMessages.MESSAGE_SUCCESS, search)
     } catch (error) {
       throw new HttpException(
         {
