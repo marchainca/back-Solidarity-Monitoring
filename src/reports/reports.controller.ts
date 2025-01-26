@@ -1,10 +1,13 @@
-import { BadRequestException, Body, Controller, Get, HttpException, HttpStatus, Post, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpException, HttpStatus, Post, Query, UseGuards } from '@nestjs/common';
 import { ReportsService } from './reports.service';
 import { CustomResponse, Report } from '../interfaces/interfaces';
 import { sendResponse } from 'src/tools/function.tools';
 import params from 'src/tools/params';
+import { CreateReportDto } from './dtos/create-report.dto';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 
-@Controller('reports')
+@Controller('letsHelp/Colombia/reports')
+@UseGuards(JwtAuthGuard)
 export class ReportsController {
     constructor(private readonly reportsService: ReportsService) {}
 
@@ -13,15 +16,11 @@ export class ReportsController {
    * @param report Datos del reporte a crear.
    * @returns ID del reporte creado.
    */
-  @Post('create')
-  async createReport(@Body() report: Report): Promise<CustomResponse> {
-    try {
-        if (!report.identificacion || !report.nombresApellidos || !report.reporte) {
-            throw new BadRequestException('Todos los campos son obligatorios.');
-        }
-      
-        const id = await this.reportsService.createReport(report);
-        return sendResponse(true, params.ResponseMessages.MESSAGE_SUCCESS, id)
+  @Post('/create')
+  async createReport(@Body() report: CreateReportDto): Promise<CustomResponse> {
+    try { 
+        const createReport = await this.reportsService.createReport(report);
+        return sendResponse(true, params.ResponseMessages.MESSAGE_SUCCESS, createReport)
     } catch (error) {
         throw new HttpException(
         {
@@ -41,7 +40,7 @@ export class ReportsController {
    * @param searchTerm Término de búsqueda.
    * @returns Lista de reportes coincidentes.
    */
-  @Get('search')
+  @Get('/search')
   async findReports(@Query('term') searchTerm: string): Promise<CustomResponse> {
 
     try {
@@ -66,7 +65,7 @@ export class ReportsController {
  * Endpoint para listar los últimos 10 reportes creados.
  * @returns Lista de los últimos 10 reportes.
  */
-@Get('recent')
+@Get('/recent')
 async listRecentReports(): Promise<CustomResponse> {
     try {
         const listReport = await this.reportsService.listRecentReports();

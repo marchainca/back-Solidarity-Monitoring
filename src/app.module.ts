@@ -10,6 +10,7 @@ import { FirestoreConnectionService } from './firebase/firestore-connection.serv
 import { SchedulerModule } from './scheduler/scheduler.module';
 import { RecognitionModule } from './recognition/recognition.module';
 import { ReportsModule } from './reports/reports.module';
+import { ActivitiesModule } from './activities/activities.module';
 
 @Module({
   imports: [
@@ -23,7 +24,8 @@ import { ReportsModule } from './reports/reports.module';
     AttendanceModule,
     SchedulerModule,
     RecognitionModule,
-    ReportsModule
+    ReportsModule,
+    ActivitiesModule
   ],
   controllers: [AppController, ],
   providers: [AppService, FirestoreConnectionService],

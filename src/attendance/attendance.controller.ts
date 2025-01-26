@@ -4,6 +4,7 @@ import { sendResponse } from 'src/tools/function.tools';
 import params from 'src/tools/params';
 import { CustomResponse } from 'src/interfaces/interfaces';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { CreateAttendanceDto } from './dtos/create-attendance.dto';
 
 @Controller('letsHelp/Colombia/attendance/')
 @UseGuards(JwtAuthGuard)
@@ -71,12 +72,9 @@ export class AttendanceController {
 
     // Ruta para registrar asistencia
     @Post('register')
-    async registerAttendance(
-        @Body('identificacion') identificacion: string,
-        @Body('actividad') actividad: string,
-    ): Promise<CustomResponse> {
+    async registerAttendance(@Body() data: CreateAttendanceDto): Promise<CustomResponse> {
         try {
-             const record = await this.attendanceService.registerAttendance(identificacion, actividad);
+             const record = await this.attendanceService.registerAttendance(data);
              return await sendResponse(true, params.ResponseMessages.SUCCESS, record);
         } catch (error) {
             throw new HttpException(

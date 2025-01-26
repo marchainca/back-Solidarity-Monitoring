@@ -20,7 +20,7 @@ import { AttendanceModule } from 'src/attendance/attendance.module';
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('SECRET_KEY'), 
-        signOptions: { expiresIn: '1h' },
+        //signOptions: { expiresIn: '1h' },
       }),
     }),
   ],

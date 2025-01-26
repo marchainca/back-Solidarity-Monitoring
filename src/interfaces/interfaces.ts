@@ -26,7 +26,7 @@ export interface Report {
   identificacion: string; 
   nombresApellidos: string; 
   reporte: string;
-  createdAt: Date;
+  createdAt: any;
   createdBy: string;
 }
 

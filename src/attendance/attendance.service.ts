@@ -1,6 +1,7 @@
 import { Firestore } from '@google-cloud/firestore';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { errorResponse } from 'src/tools/function.tools';
+import { CreateAttendanceDto } from './dtos/create-attendance.dto';
 
 @Injectable()
 export class AttendanceService {
@@ -96,16 +97,26 @@ export class AttendanceService {
     }
 
     // Registrar asistencia
-    async registerAttendance(identificacion: string, actividad: string): Promise<object> {
+    async registerAttendance(data: CreateAttendanceDto): Promise<object> {
         try {
+            const { 
+                program, 
+                subProgram, 
+                activity, 
+                firstName, 
+                lastName, 
+                documentType, 
+                documentNumber 
+              } = data;
+              
             const fechaActual = new Date().toISOString().split('T')[0]; // Fecha en formato YYYY-MM-DD
-            const isDuplicate = await this.isDuplicateAttendance(identificacion, actividad, fechaActual);
+            const isDuplicate = await this.isDuplicateAttendance(documentNumber, activity, fechaActual);
             if (isDuplicate) {
                 throw await errorResponse("Error: An attendance record already exists for the member for this activity and date.", 
                     "registerAttendance");
             }
-            const integrantesRef = this.firestore.collection('members');
-            let querySnapshot = await integrantesRef.where('identificacion', '==', identificacion).get();
+            const integrantesRef = this.firestore.collection('faceRecognition');
+            let querySnapshot = await integrantesRef.where('documentNumber', '==', documentNumber).get();
             console.log("Consulta asistenciasRef");
             if (querySnapshot.empty) {
                 throw await errorResponse("Error: Invalid Identification", "registerAttendance");
@@ -115,9 +126,14 @@ export class AttendanceService {
             const newAttendanceRef = asistenciasRef.doc();
             
             await newAttendanceRef.set({
-                identificacion,
+                tipoDocumento: documentType,
+                identificacion: documentNumber,
                 fecha: fechaActual,
-                actividad,
+                actividad: activity,
+                programa: program, 
+                subPrograma: subProgram,
+                nombresApellidos: firstName + " " + lastName, 
+               
             });
 
             return {message: `Asistencia registrada exitosamente para el integrante ${querySnapshot.docs[0].data().nombre}`};
