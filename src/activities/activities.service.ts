@@ -60,27 +60,89 @@ export class ActivitiesService {
         }
     }
 
-    /**
-     * Obtiene las actividades asociadas a un programa específico.
-     * @param programName Nombre del programa.
-     * @returns Las actividades del programa solicitado.
-     */
-    async getProgramActivities(programName: string): Promise<any> {
-        try {
-            const programRef = this.firestore.collection('programs').doc(programName);
-            const doc = await programRef.get();
-        
-            if (!doc.exists) {
-                throw await errorResponse(`Error: The program "${programName}" does not exist.`, 'getProgramActivities');
-            }
-        
-            // Retornar las actividades del programa
-            return doc.data();
-        } catch (error) {
-            console.error('Error al obtener las actividades del programa:', error);
-            throw error;
-        }
+  /**
+   * Obtiene las actividades asociadas a un programa específico.
+   * @param programName Nombre del programa.
+   * @returns Las actividades del programa solicitado.
+   */
+  async getProgramActivities(programName: string): Promise<any> {
+      try {
+          const programRef = this.firestore.collection('programs').doc(programName);
+          const doc = await programRef.get();
+      
+          if (!doc.exists) {
+              throw await errorResponse(`Error: The program "${programName}" does not exist.`, 'getProgramActivities');
+          }
+      
+          // Retornar las actividades del programa
+          return doc.data();
+      } catch (error) {
+          console.error('Error al obtener las actividades del programa:', error);
+          throw error;
+      }
+  }
+
+
+  // reestructuración de las colecciones y los documentos para los programas, subprogramas y actividades
+
+  async createProgram(body: any): Promise<string>{
+    try {
+      const programRef = this.firestore.collection('programas').doc(); // Genera un ID automático
+      await programRef.set({
+        name: body.name,
+        description: body.description
+      });
+    
+      console.log('Programa creado con ID:', programRef.id);
+      return programRef.id
+
+    } catch (error) {
+      console.error('Error al crear el programa:', error);
+      throw error
     }
-  
+
+  }
+
+  async createSubprogram(body: any): Promise<string>{
+    try {
+      // Obtenemos la referencia al documento del programa
+      const programRef = this.firestore.collection('programas').doc(body.programId);
+      // Creamos un nuevo documento en la subcolección "subprograms"
+      const subprogramRef = programRef.collection('subprograms').doc();
+      await subprogramRef.set({
+        name: body.name,                       
+        description: body.description
+      });
+    
+      console.log('Subprograma creado con ID:', subprogramRef.id);
+      return subprogramRef.id
+
+    } catch (error) {
+      console.error('Error al crear el programa:', error);
+      throw error
+    }
+
+  }
+
+  async createActivity(body: any): Promise<string>{
+    try {
+      // Referencia al documento de un subprograma específico
+      const subprogramRef = this.firestore.collection('programas')
+      .doc(body.programId)
+      .collection('subprograms')
+      .doc(body.subprogramId);
+
+      // Creamos un nuevo documento en la subcolección "activities"
+      const activityRef = subprogramRef.collection('activities').doc();
+      await activityRef.set(body.activityData);
+
+      console.log('Actividad creada con ID:', activityRef.id);
+      return activityRef.id
+    } catch (error) {
+      console.error('Error al crear el programa:', error);
+      throw error
+    }
+
+  }  
   
 }

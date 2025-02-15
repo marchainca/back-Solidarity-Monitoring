@@ -1,4 +1,4 @@
-import { Controller, Get, HttpException, HttpStatus, Param, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, UseGuards } from '@nestjs/common';
 import { ActivitiesService } from './activities.service';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { sendResponse } from 'src/tools/function.tools';
@@ -80,4 +80,82 @@ export class ActivitiesController {
         }
     
     }
+
+    /**
+     * Endpoint para crear los programas.
+     * @body body Nombre del programa.
+     * @returns Id del programa.
+    */
+    @Post('/createProgram')
+    async createProgram(@Body() body: JSON): Promise<CustomResponse> {
+        try {
+            const createProgram = await this.activitiesService.createProgram(body);
+            
+            return await sendResponse(true, params.ResponseMessages.MESSAGE_SUCCESS, createProgram );
+        } catch (error) {
+            throw new HttpException(
+            {
+                code: error.code,
+                message: error.message,
+                attribute: error.attribute,
+                statusCode: error.statusCode,
+            },
+            HttpStatus.BAD_REQUEST,
+            );
+        }
+    
+    }
+
+    /**
+     * Endpoint para crear los programas.
+     * @body body data del subPrograma.
+     * @returns Id del subPrograma.
+    */
+    @Post('/createSubprogram')
+    async createSubprogram(@Body() body: JSON): Promise<CustomResponse> {
+        try {
+            const createSubprogram = await this.activitiesService.createSubprogram(body);
+            
+            return await sendResponse(true, params.ResponseMessages.MESSAGE_SUCCESS, createSubprogram );
+        } catch (error) {
+            throw new HttpException(
+            {
+                code: error.code,
+                message: error.message,
+                attribute: error.attribute,
+                statusCode: error.statusCode,
+            },
+            HttpStatus.BAD_REQUEST,
+            );
+        }
+    
+    }
+
+
+    /**
+     * Endpoint para crear las actividades.
+     * @body body data de la actividad.
+     * @returns Id de la actividad.
+    */
+    @Post('/createActivity')
+    async createActivity(@Body() body: JSON): Promise<CustomResponse> {
+        try {
+
+            const createActivity = await this.activitiesService.createActivity(body);
+            
+            return await sendResponse(true, params.ResponseMessages.MESSAGE_SUCCESS, createActivity );
+        } catch (error) {
+            throw new HttpException(
+            {
+                code: error.code,
+                message: error.message,
+                attribute: error.attribute,
+                statusCode: error.statusCode,
+            },
+            HttpStatus.BAD_REQUEST,
+            );
+        }
+    
+    }
+
 }
