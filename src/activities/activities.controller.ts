@@ -90,6 +90,7 @@ export class ActivitiesController {
     @Post('/createProgram')
     async createProgram(@Body() body: JSON): Promise<CustomResponse> {
         try {
+            console.log("que llega en createProgram", body)
             const createProgram = await this.activitiesService.createProgram(body);
             
             return await sendResponse(true, params.ResponseMessages.MESSAGE_SUCCESS, createProgram );
@@ -141,7 +142,7 @@ export class ActivitiesController {
     @Post('/createActivity')
     async createActivity(@Body() body: JSON): Promise<CustomResponse> {
         try {
-
+            console.log("Que se recibe en createActivity", body);
             const createActivity = await this.activitiesService.createActivity(body);
             
             return await sendResponse(true, params.ResponseMessages.MESSAGE_SUCCESS, createActivity );

@@ -91,7 +91,8 @@ export class ActivitiesService {
       const programRef = this.firestore.collection('programas').doc(); // Genera un ID automático
       await programRef.set({
         name: body.name,
-        description: body.description
+        description: body.description,
+        responsible: body.responsible
       });
     
       console.log('Programa creado con ID:', programRef.id);
